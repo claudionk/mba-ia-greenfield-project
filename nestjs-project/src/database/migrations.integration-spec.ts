@@ -37,6 +37,11 @@ describe('Database migrations (integration)', () => {
       ),
       dataSource.query(`DROP TABLE IF EXISTS "migrations" CASCADE`),
     ]);
+    // Enum types survive table drops and may be left over from `synchronize`
+    // runs in other suites; the migration's CREATE TYPE would then fail.
+    await dataSource.query(
+      `DROP TYPE IF EXISTS "public"."verification_tokens_type_enum"`,
+    );
   });
 
   afterAll(async () => {
